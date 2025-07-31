@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sheygo - Linktree</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Canvas pour le réseau de points -->
+    <canvas id="network-canvas"></canvas>
+    
+    <div class="container">
+        <div class="profile-section">
+            <div class="profile-image">
+                <img src="profile.png" alt="Sheygo" id="profile-pic">
+            </div>
+            <h1 class="profile-name">Sheygo</h1>
+            <p class="profile-description">JavaScript, HTML/CSS & Python Developer</p>
+        </div>
+
+        <div class="links-container">
+            <div class="link-card" data-link="portfolio" data-url="https://sheygow.github.io/portfolio/">
+                <div class="link-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="link-content">
+                    <h3>My Portfolio</h3>
+                    <p>Discover my projects and skills</p>
+                </div>
+                <div class="link-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+
+            <div class="link-card" data-link="discord" data-username="sheygo">
+                <div class="link-icon">
+                    <i class="fab fa-discord"></i>
+                </div>
+                <div class="link-content">
+                    <h3>Discord</h3>
+                    <p>Contact me on Discord</p>
+                </div>
+                <div class="link-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+
+            <div class="link-card" data-link="github" data-url="https://github.com/sheygow">
+                <div class="link-icon">
+                    <i class="fab fa-github"></i>
+                </div>
+                <div class="link-content">
+                    <h3>GitHub</h3>
+                    <p>Explore my source code</p>
+                </div>
+                <div class="link-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+
+            <div class="link-card" data-link="services" data-url="https://sheygow.github.io/portfolio/#services">
+                <div class="link-icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <div class="link-content">
+                    <h3>My Services</h3>
+                    <p>Discord bots, websites, automation</p>
+                </div>
+                <div class="link-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+
+            <div class="link-card" data-link="contact" data-email="sheygo.contact.pro@gmail.com">
+                <div class="link-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div class="link-content">
+                    <h3>Contact Me</h3>
+                    <p>Let's discuss your project</p>
+                </div>
+                <div class="link-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2025 Sheygo - Full Stack Developer</p>
+        </div>
+    </div>
+
+    <!-- Modal pour le contact -->
+    <div id="contact-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-envelope"></i> Contact Me</h3>
+                <button class="close-btn" id="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="email-copied">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Email copied to clipboard!</span>
+                </div>
+                <div class="email-display">
+                    <code id="email-text">sheygo.contact.pro@gmail.com</code>
+                </div>
+                <div class="email-buttons">
+                    <button class="email-btn gmail-btn" id="open-gmail">
+                        <i class="fab fa-google"></i>
+                        Open Gmail
+                    </button>
+                    <button class="email-btn outlook-btn" id="open-outlook">
+                        <i class="fab fa-microsoft"></i>
+                        Open Outlook
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
