@@ -1,133 +1,143 @@
 const CONFIG = {
     email: 'sheygo.contact.pro@gmail.com',
-    discordUsername: 'sheygo'
+    discordUsername: 'sheygo',
+
+    // ⚠️ Remplacez par votre véritable ID Discord (17-19 chiffres).
+    // Clic droit sur votre profil dans Discord → "Copier l'identifiant utilisateur"
+    // (le mode développeur doit être activé : Paramètres > Avancés > Mode développeur)
+    discordId: '941428422482227240',
+
+    // Intervalle de rafraîchissement de la présence Discord (en ms)
+    presenceRefreshInterval: 20000
 };
 
-document.addEventListener('DOMContentLoaded', function() {
-    initializeAnimations();
+
+document.addEventListener('DOMContentLoaded', function () {
     initializeLinkCards();
     initializeContactModal();
-    initializeNetworkBackground();
+    initializeDiscordPresence();
 });
 
-function initializeAnimations() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.animationPlayState = 'running';
-            }
-        });
-    }, {
-        threshold: 0.1
-    });
 
-    const linkCards = document.querySelectorAll('.link-card');
-    linkCards.forEach(card => {
-        observer.observe(card);
-    });
-}
+// =========================================================
+// LIENS
+// =========================================================
 
 function initializeLinkCards() {
+
     const linkCards = document.querySelectorAll('.link-card');
-    
+
     linkCards.forEach(card => {
-        card.addEventListener('click', function(e) {
+
+        card.addEventListener('click', function (e) {
+
             e.preventDefault();
-            
-            this.style.transform = 'translateY(2px) scale(0.98)';
-            
+
+            this.style.transform = 'translateY(1px) scale(0.98)';
+
             setTimeout(() => {
                 this.style.transform = '';
             }, 150);
-            
-            const linkType = this.getAttribute('data-link');
-            
-            handleLinkClick(linkType, this);
-            
-            createClickEffect(e);
-        });
-        
-        card.addEventListener('mouseenter', function() {
-            const icon = this.querySelector('.link-icon');
-            icon.style.transform = 'scale(1.1) rotate(5deg)';
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            const icon = this.querySelector('.link-icon');
-            icon.style.transform = '';
+
+            handleLinkClick(this.getAttribute('data-link'), this);
         });
     });
 }
 
+
 function handleLinkClick(linkType, element) {
-    switch(linkType) {
-        case 'portfolio':
-        case 'github':
-        case 'services':
+
+    switch (linkType) {
+
+        case 'valorant-api':
+        case 'guns': {
+
             const url = element.getAttribute('data-url');
+
             if (url) {
-                window.open(url, '_blank');
+                window.open(url, '_blank', 'noopener');
             }
+
             break;
-            
-        case 'discord':
+        }
+
+        case 'discord': {
+
             const username = element.getAttribute('data-username') || CONFIG.discordUsername;
+
             copyToClipboard(username);
             showNotification(`Discord username "${username}" copied to clipboard!`, 'discord');
+
             break;
-            
+        }
+
         case 'contact':
+
             openContactModal();
+
             break;
-            
+
         default:
+
             console.log('Unknown link type:', linkType);
     }
 }
 
+
+// =========================================================
+// CLIPBOARD
+// =========================================================
+
 function copyToClipboard(text) {
+
     if (navigator.clipboard && window.isSecureContext) {
         return navigator.clipboard.writeText(text);
-    } else {
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-        textArea.style.position = 'fixed';
-        textArea.style.left = '-999999px';
-        textArea.style.top = '-999999px';
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        
-        try {
-            document.execCommand('copy');
-            textArea.remove();
-            return Promise.resolve();
-        } catch (error) {
-            textArea.remove();
-            return Promise.reject(error);
-        }
+    }
+
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+        document.execCommand('copy');
+        textArea.remove();
+        return Promise.resolve();
+    } catch (error) {
+        textArea.remove();
+        return Promise.reject(error);
     }
 }
 
+
+// =========================================================
+// NOTIFICATIONS
+// =========================================================
+
 function showNotification(message, type = 'default') {
+
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
-    
+
     let icon = 'fas fa-check-circle';
-    let bgColor = 'rgba(139, 92, 246, 0.9)';
-    
+    let bgColor = 'rgba(139, 92, 246, 0.92)';
+
     if (type === 'discord') {
         icon = 'fab fa-discord';
-        bgColor = 'rgba(88, 101, 242, 0.9)';
+        bgColor = 'rgba(88, 101, 242, 0.92)';
     }
-    
+
     notification.innerHTML = `
         <div class="notification-content">
             <i class="${icon}"></i>
             <span>${message}</span>
         </div>
     `;
-    
+
     notification.style.cssText = `
         position: fixed;
         top: 20px;
@@ -137,346 +147,240 @@ function showNotification(message, type = 'default') {
         padding: 12px 20px;
         border-radius: 12px;
         backdrop-filter: blur(10px);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        z-index: 1500;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        z-index: 2500;
         animation: slideInRight 0.3s ease-out;
         font-family: 'Inter', sans-serif;
         font-size: 0.9rem;
         font-weight: 500;
         max-width: 300px;
     `;
-    
-    if (!document.querySelector('#notification-styles')) {
-        const styles = document.createElement('style');
-        styles.id = 'notification-styles';
-        styles.textContent = `
-            @keyframes slideInRight {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-            
-            @keyframes slideOutRight {
-                from {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-                to {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-            }
-            
-            .notification-content {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
-        `;
-        document.head.appendChild(styles);
-    }
-    
+
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
+
         notification.style.animation = 'slideOutRight 0.3s ease-out';
+
         setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
+            notification.remove();
         }, 300);
-    }, 4000);
+
+    }, 3500);
 }
 
+
+// =========================================================
+// MODAL CONTACT
+// =========================================================
+
 function initializeContactModal() {
+
     const modal = document.getElementById('contact-modal');
     const closeBtn = document.getElementById('close-modal');
     const emailText = document.getElementById('email-text');
     const gmailBtn = document.getElementById('open-gmail');
     const outlookBtn = document.getElementById('open-outlook');
-    
+
     emailText.textContent = CONFIG.email;
-    
+
     closeBtn.addEventListener('click', closeContactModal);
-    
-    modal.addEventListener('click', function(e) {
+
+    modal.addEventListener('click', (e) => {
         if (e.target === modal) {
             closeContactModal();
         }
     });
-    
-    document.addEventListener('keydown', function(e) {
+
+    document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && modal.classList.contains('show')) {
             closeContactModal();
         }
     });
-    
+
     gmailBtn.addEventListener('click', () => openEmailClient('gmail'));
     outlookBtn.addEventListener('click', () => openEmailClient('outlook'));
 }
 
+
 function openContactModal() {
+
     const modal = document.getElementById('contact-modal');
-    
+
     copyToClipboard(CONFIG.email);
-    
+
     modal.classList.add('show');
-    
     document.body.style.overflow = 'hidden';
 }
 
+
 function closeContactModal() {
+
     const modal = document.getElementById('contact-modal');
-    
+
     modal.classList.remove('show');
-    
     document.body.style.overflow = '';
 }
 
+
 function openEmailClient(type) {
+
     const email = CONFIG.email;
     const subject = encodeURIComponent('Contact from Linktree');
     const body = encodeURIComponent('Hello Sheygo,\n\nI found your linktree and would like to get in touch.\n\nBest regards');
-    
+
     let url;
-    
-    switch(type) {
-        case 'gmail':
-            url = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}&body=${body}`;
-            break;
-        case 'outlook':
-            url = `https://outlook.live.com/mail/0/deeplink/compose?to=${email}&subject=${subject}&body=${body}`;
-            break;
+
+    if (type === 'gmail') {
+        url = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}&body=${body}`;
+    } else if (type === 'outlook') {
+        url = `https://outlook.live.com/mail/0/deeplink/compose?to=${email}&subject=${subject}&body=${body}`;
     }
-    
+
     if (url) {
-        window.open(url, '_blank');
-        
+
+        window.open(url, '_blank', 'noopener');
+
         setTimeout(() => {
             closeContactModal();
-        }, 500);
+        }, 400);
     }
 }
 
-function initializeProfileEffects() {
-    const profileImage = document.querySelector('.profile-image img');
-    
-    profileImage.addEventListener('mouseenter', function() {
-        this.style.transform = 'rotate(5deg)';
-    });
-    
-    profileImage.addEventListener('mouseleave', function() {
-        this.style.transform = '';
-    });
-}
 
-function createClickEffect(e) {
-    const effect = document.createElement('div');
-    effect.className = 'click-effect';
-    
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    effect.style.cssText = `
-        position: absolute;
-        left: ${x}px;
-        top: ${y}px;
-        width: 4px;
-        height: 4px;
-        background: #8B5CF6;
-        border-radius: 50%;
-        pointer-events: none;
-        animation: clickRipple 0.6s ease-out;
-        z-index: 10;
-    `;
-    
-    if (!document.querySelector('#click-effect-styles')) {
-        const styles = document.createElement('style');
-        styles.id = 'click-effect-styles';
-        styles.textContent = `
-            @keyframes clickRipple {
-                0% {
-                    transform: scale(1);
-                    opacity: 1;
-                }
-                100% {
-                    transform: scale(20);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(styles);
+// =========================================================
+// PRÉSENCE DISCORD (via Lanyard)
+//
+// ⚠️ IMPORTANT : Lanyard ne peut suivre QUE les comptes membres
+// de son propre serveur Discord (il utilise ce serveur pour
+// écouter les événements de présence). Sans ça, l'API renvoie
+// success:false / "user not found", même si l'ID est correct.
+//
+// -> Rejoins https://discord.gg/lanyard (lien officiel du repo
+//    github.com/Phineas/lanyard) avec le compte 941428422482227240,
+//    sinon rien ne pourra jamais s'afficher.
+// =========================================================
+
+function initializeDiscordPresence() {
+
+    if (!CONFIG.discordId || CONFIG.discordId === 'YOUR_DISCORD_ID_HERE') {
+
+        setPresenceText('Discord ID not configured');
+        return;
     }
-    
-    e.currentTarget.appendChild(effect);
-    
-    setTimeout(() => {
-        if (effect.parentNode) {
-            effect.parentNode.removeChild(effect);
-        }
-    }, 600);
+
+    fetchDiscordPresence();
+
+    setInterval(fetchDiscordPresence, CONFIG.presenceRefreshInterval);
 }
 
-function initializeNetworkBackground() {
-    const canvas = document.getElementById('network-canvas');
-    const ctx = canvas.getContext('2d');
-    
-    let nodes = [];
-    let mouse = { x: null, y: null };
-    let animationId;
-    
-    const config = {
-        nodeCount: 120,
-        maxDistance: 200,
-        nodeRadius: 2,
-        nodeSpeed: 0.5,
-        mouseInfluence: 100,
-        mousePushStrength: 30,
-        colors: {
-            node: 'rgba(139, 92, 246, 0.6)',
-            line: 'rgba(139, 92, 246, 0.2)',
-            mouseInfluence: 'rgba(168, 85, 247, 0.4)'
+
+async function fetchDiscordPresence() {
+
+    try {
+
+        const response = await fetch(`https://api.lanyard.rest/v1/users/${CONFIG.discordId}`);
+
+        if (!response.ok) {
+            throw new Error(`http_${response.status}`);
         }
+
+        const payload = await response.json();
+
+        if (!payload.success || !payload.data) {
+
+            // Cas le plus fréquent : le compte n'est pas membre
+            // du serveur Discord de Lanyard (voir note ci-dessus).
+            setPresenceText('Join the Lanyard Discord server to enable this');
+            return;
+        }
+
+        applyDiscordPresence(payload.data);
+
+    } catch (err) {
+
+        console.error('Lanyard fetch failed:', err);
+        setPresenceText('Presence unavailable');
+    }
+}
+
+
+function applyDiscordPresence(data) {
+
+    // --- Avatar ---
+    // On utilise le raccourci officiel Lanyard (https://api.lanyard.rest/<id>.png),
+    // qui sert directement l'avatar Discord sans qu'on ait à reconstruire
+    // l'URL nous-mêmes (et il gère aussi le cas "pas d'avatar" tout seul).
+    const avatarImg = document.getElementById('profile-pic');
+    avatarImg.src = `https://api.lanyard.rest/${CONFIG.discordId}.png`;
+
+    // --- Statut (en ligne / inactif / ne pas déranger / hors ligne) ---
+
+    const statusDot = document.getElementById('status-dot');
+    const status = data.discord_status || 'offline';
+
+    statusDot.className = 'status-dot ' + status;
+
+    // --- Activité en cours ---
+
+    setPresenceText(buildPresenceText(data));
+}
+
+
+function buildPresenceText(data) {
+
+    const status = data.discord_status || 'offline';
+
+    if (data.listening_to_spotify && data.spotify) {
+
+        return `Listening to ${data.spotify.song} — ${data.spotify.artist}`;
+    }
+
+    const activity = (data.activities || []).find(a => a.type !== 4);
+
+    if (activity) {
+
+        const typeLabels = {
+            0: 'Playing',
+            1: 'Streaming',
+            2: 'Listening to',
+            3: 'Watching',
+            5: 'Competing in'
+        };
+
+        const label = typeLabels[activity.type] || 'Playing';
+        let text = `${label} ${activity.name}`;
+
+        if (activity.details) {
+            text += ` — ${activity.details}`;
+        }
+
+        return text;
+    }
+
+    const customStatus = (data.activities || []).find(a => a.type === 4);
+
+    if (customStatus && customStatus.state) {
+        return customStatus.state;
+    }
+
+    const statusLabels = {
+        online: 'Online',
+        idle: 'Idle',
+        dnd: 'Do Not Disturb',
+        offline: 'Offline'
     };
-    
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    
-    function createNodes() {
-        nodes = [];
-        for (let i = 0; i < config.nodeCount; i++) {
-            nodes.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                vx: (Math.random() - 0.5) * config.nodeSpeed,
-                vy: (Math.random() - 0.5) * config.nodeSpeed,
-                originalVx: (Math.random() - 0.5) * config.nodeSpeed,
-                originalVy: (Math.random() - 0.5) * config.nodeSpeed
-            });
-        }
-    }
-    
-    function distance(a, b) {
-        return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
-    }
-    
-    function updateNodes() {
-        nodes.forEach(node => {
-            if (mouse.x !== null && mouse.y !== null) {
-                const mouseDistance = distance(node, mouse);
-                if (mouseDistance < config.mouseInfluence) {
-                    const force = (config.mouseInfluence - mouseDistance) / config.mouseInfluence;
-                    const angle = Math.atan2(node.y - mouse.y, node.x - mouse.x);
-                    
-                    node.vx = node.originalVx + Math.cos(angle) * force * config.mousePushStrength;
-                    node.vy = node.originalVy + Math.sin(angle) * force * config.mousePushStrength;
-                } else {
-                    node.vx += (node.originalVx - node.vx) * 0.02;
-                    node.vy += (node.originalVy - node.vy) * 0.02;
-                }
-            }
-            
-            node.x += node.vx;
-            node.y += node.vy;
-            
-            if (node.x < 0 || node.x > canvas.width) {
-                node.vx *= -1;
-                node.originalVx *= -1;
-            }
-            if (node.y < 0 || node.y > canvas.height) {
-                node.vy *= -1;
-                node.originalVy *= -1;
-            }
-            
-            node.x = Math.max(0, Math.min(canvas.width, node.x));
-            node.y = Math.max(0, Math.min(canvas.height, node.y));
-        });
-    }
-    
-    function drawConnections() {
-        for (let i = 0; i < nodes.length; i++) {
-            for (let j = i + 1; j < nodes.length; j++) {
-                const dist = distance(nodes[i], nodes[j]);
-                
-                if (dist < config.maxDistance) {
-                    const opacity = (config.maxDistance - dist) / config.maxDistance;
-                    
-                    ctx.strokeStyle = `rgba(139, 92, 246, ${opacity * 0.2})`;
-                    ctx.lineWidth = 1;
-                    ctx.beginPath();
-                    ctx.moveTo(nodes[i].x, nodes[i].y);
-                    ctx.lineTo(nodes[j].x, nodes[j].y);
-                    ctx.stroke();
-                }
-            }
-        }
-    }
-    
-    function drawNodes() {
-        nodes.forEach(node => {
-            ctx.fillStyle = config.colors.node;
-            ctx.beginPath();
-            ctx.arc(node.x, node.y, config.nodeRadius, 0, Math.PI * 2);
-            ctx.fill();
-            
-            if (mouse.x !== null && mouse.y !== null) {
-                const mouseDistance = distance(node, mouse);
-                if (mouseDistance < config.mouseInfluence) {
-                    const intensity = (config.mouseInfluence - mouseDistance) / config.mouseInfluence;
-                    ctx.fillStyle = `rgba(168, 85, 247, ${intensity * 0.3})`;
-                    ctx.beginPath();
-                    ctx.arc(node.x, node.y, config.nodeRadius + intensity * 3, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            }
-        });
-    }
-    
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        updateNodes();
-        drawConnections();
-        drawNodes();
-        
-        animationId = requestAnimationFrame(animate);
-    }
-    
-    function handleMouseMove(e) {
-        mouse.x = e.clientX;
-        mouse.y = e.clientY;
-    }
-    
-    function handleMouseLeave() {
-        mouse.x = null;
-        mouse.y = null;
-    }
-    
-    function handleResize() {
-        resizeCanvas();
-        createNodes();
-    }
-    
-    resizeCanvas();
-    createNodes();
-    animate();
-    
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseleave', handleMouseLeave);
-    window.addEventListener('resize', handleResize);
-    
-    return () => {
-        cancelAnimationFrame(animationId);
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseleave', handleMouseLeave);
-        window.removeEventListener('resize', handleResize);
-    };
+
+    return statusLabels[status] || 'Offline';
+}
+
+
+function setPresenceText(text) {
+
+    const chip = document.getElementById('presence-chip');
+    const textEl = document.getElementById('presence-text');
+    const icon = chip.querySelector('i');
+
+    icon.className = 'fas fa-circle';
+    textEl.textContent = text;
 }
