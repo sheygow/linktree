@@ -51,7 +51,7 @@ function handleLinkClick(linkType, element) {
 
         case 'valorant-api':
         case 'guns':
-        case 'name-mc'{
+        case 'name-mc':{
 
             const url = element.getAttribute('data-url');
 
